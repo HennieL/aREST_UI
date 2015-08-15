@@ -3,10 +3,10 @@
   See the README file for more details.
  
   Written in 2015 by Marco Schwartz under a GPL license. 
-  Version 1.0.0
+  Version 1.0.1
   Changelog:
   
-  Version 1.0.0: Initial release with buttons only
+  Version 1.0.1: Initial release with buttons only
 */
 
 #ifndef aRest_ui_h
@@ -31,6 +31,20 @@ aREST_UI() {
 // Get title
 void title(String the_title) {
   ui_title = the_title;
+}
+
+// Create customhtml
+void addCustomHtml(String chtml){
+	
+	customHtml[customHtml_index] = chtml;
+	customHtml_index++;
+}
+
+// Create customjavascript
+void addCustomJavascript(String jscript){
+	
+	customJavascript[customJavascript_index] = jscript;
+	customJavascript_index++;
 }
 
 // Create button
@@ -89,6 +103,12 @@ virtual void root_answer() {
     else {
       addToBuffer("<h1>Interface</h1>");
     }
+	
+	//Custom HTML
+	for (int i = 0; i < customHtml_index; i++) {
+      addToBuffer(customHtml[i]);
+    }
+	
 
     // Buttons UI
     for (int i = 0; i < buttons_index; i++) {
@@ -105,7 +125,11 @@ virtual void root_answer() {
     // // Sliders UI
     for (int i = 0; i < sliders_index; i++) {
       addToBuffer("<div class=\"row\">");
+      #if defined(ESP8266)
+      addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='1023' min='0' step='5' id='slider");
+      #else
       addToBuffer("<div class=\"col-md-2\"><input type='range' value='0' max='255' min='0' step='5' id='slider");
+      #endif
       addToBuffer(sliders[i]);
       addToBuffer("'></div>");
       addToBuffer("</div>");
@@ -162,6 +186,11 @@ virtual void root_answer() {
       addToBuffer(int_labels_names[j]);
       addToBuffer("); });"); 
     }
+	
+	// Custom JavaScript
+    for (int j = 0; j < customJavascript_index; j++) {
+      addToBuffer(customJavascript[customJavascript_index]);
+    }
 
     addToBuffer("});</script>");
 
@@ -174,11 +203,19 @@ private:
   // UI title
   String ui_title;
 
+  // Custom html array
+  String customHtml[100];
+  int customHtml_index;
+
+  // Custom JavaScript array
+  String customJavascript[100];
+  int customJavascript_index;
+  
   // Buttons array
   int buttons[10];
   int buttons_index;
 
-  // Buttons array
+  // Sliders array
   int sliders[10];
   int sliders_index;
   
